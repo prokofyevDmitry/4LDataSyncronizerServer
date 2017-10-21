@@ -5,6 +5,7 @@
   "main": "server.js",
   "scripts": {
     "test": "tsc && ts-mocha -p ./ src/**/*.spec.ts",
+    "testDevEnv":"export NODE_ENV=dev && npm test ",
     "build": "tsc && node dist/index.js",
     "start": "npm run build && node dist/index.js"
   },

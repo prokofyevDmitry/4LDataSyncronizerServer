@@ -1,10 +1,8 @@
 import CarPhysics from './carPhysics';
+
+const config = require('../config');
 import {expect} from 'chai';
 import 'mocha';
-
-import config from '../config';
-console.log(config);
-
 
 
 const carPhysics = new CarPhysics(config.comPort);

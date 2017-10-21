@@ -1,6 +1,11 @@
-let config =   {
+const env = process.env.NODE_ENV || 'dev';
+
+const configs =
+{
+dev: {
+    env : env,
     comPort : {
-        name: "/dev/pts/12",
+        name: "/dev/pts/11",
         configs: {
             //baudRate: 90600,
             autoOpen: false,
@@ -8,7 +13,7 @@ let config =   {
 },
 
     portComEmulator : {
-            name: "/dev/pts/13",
+            name: "/dev/pts/12",
             configs: {
                 //baudRate: 90600,
                 autoOpen: false
@@ -16,6 +21,10 @@ let config =   {
         }
 
 }
+}
+
+
+const config = configs[env];
 
 export default config;
 
