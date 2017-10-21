@@ -2,7 +2,7 @@ import CarPhysics from './carPhysics';
 import {expect} from 'chai';
 import 'mocha';
 
-import {config} from '../config';
+import config from '../config';
 console.log(config);
 
 

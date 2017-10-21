@@ -1,4 +1,4 @@
-export let config =   {
+let config =   {
     comPort : {
         name: "/dev/pts/12",
         configs: {
@@ -17,5 +17,5 @@ export let config =   {
 
 }
 
-
+export default config;
 
