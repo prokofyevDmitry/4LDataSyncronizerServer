@@ -18,6 +18,7 @@ export default class CarPhysics {
             if (err) return console.log('Error opening port: ', err.message);
             // enregistrmenet pour utilisation du com port plus tard.
             console.log("Port Openned")
+
         })
 
 
