@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "test": "tsc && ts-mocha -p ./ src/**/*.spec.ts",
-    "testDevEnv":"export NODE_ENV=dev && npm test ",
+    "testDevEnv": "export NODE_ENV=dev && npm test ",
     "build": "tsc && node dist/index.js",
     "start": "npm run build && node dist/index.js"
   },
@@ -17,6 +17,7 @@
     "ejs": "^2.5.7",
     "express": "^4.16.2",
     "express-session": "^1.15.6",
+    "mysql": "^2.15.0",
     "node-schedule": "^1.2.5",
     "serialport": "^6.0.0",
     "typescript": "^2.5.3",

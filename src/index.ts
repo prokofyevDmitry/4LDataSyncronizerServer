@@ -3,14 +3,12 @@
 import express = require('express');
 import config from './config';
 
-import schedule from 'node-schedule';
-import winston from 'winston';
+const schedule = require('node-schedule');
+const winston = require('winston');
 import session = require('express-session');
 import CarPhysics from './carphysics/carPhysics';
 import * as SerialPort from 'serialport';
-
 const app = express();
-
 
 const sess = {
     secret: 'keyboard cat',
@@ -62,39 +60,66 @@ app.get('/', (req, res) => {
 app.listen(8080, () => {
 
     const carPhysics = new CarPhysics(config.comPort);
+    // car physics event handling
 
+    // error connecting serial
+    carPhysics.eventEmitter.on('error-serial',(err)=>{
+        winston.log('ERROR', 'Cannot connect to serial communication', {
+            error: err
+        })
+    });
 
-    // if we are in dev environement we simulate a second port
-    if (config.env === 'dev'){
-        //     // launching cron job to give emulate data from axcelerometer
-    var rule = new schedule.RecurrenceRule();
+    // error connection to db
+    carPhysics.eventEmitter.on('error-mysql',(err)=>{
+        winston.log('ERROR', 'Cannot connect to mysql server', {
+            error: err
+        })
+    });
 
-    rule.second = new schedule.Range(0, 59, 5);
-    const axcelEmul = schedule.scheduleJob(rule, () => {
-        const portEmulator = new SerialPort(config.portComEmulator.name, config.portComEmulator.configs);
-        portEmulator.open((err) => {
-            if (err) return console.log('Error opening port: ', err.message);
-            // generation des messages aléatoires
-            const lat =  ( ( Math.round(Math.random()) === 0 ) ? -1 : 1 )* 90 * Math.random();
-            const lng =  ( ( Math.round(Math.random()) === 0 ) ? -1 : 1 )* 180 * Math.random();
+    // well connected serial
+    carPhysics.eventEmitter.on('ok-serial', ()=>{
+        winston.log('info', 'Connected to serial and mysql for CarPhysics');
 
-            const alt = ( ( Math.round(Math.random()) === 0 ) ? -1 : 1 )* 2000 * Math.random();
+        // if we are in dev environement we simulate a second port
+        if (config.env === 'dev'){
+            //     // launching cron job to give emulate data from axcelerometer
+            const rule = new schedule.RecurrenceRule();
 
-            const magx = 360 * Math.random();
+            rule.second = new schedule.Range(0, 59, 5);
+            const axcelEmul = schedule.scheduleJob(rule, () => {
+                const portEmulator = new SerialPort(config.portComEmulator.name, config.portComEmulator.configs);
+                portEmulator.open((err) => {
+                    if (err) return console.log('Error opening port: ', err.message);
+                    // generation des messages aléatoires
+                    const lat =  ( ( Math.round(Math.random()) === 0 ) ? -1 : 1 )* 90 * Math.random();
+                    const lng =  ( ( Math.round(Math.random()) === 0 ) ? -1 : 1 )* 180 * Math.random();
 
-            const roll = ( ( Math.round(Math.random()) === 0 ) ? -1 : 1 )* 180 * Math.random();
+                    const alt = ( ( Math.round(Math.random()) === 0 ) ? -1 : 1 )* 2000 * Math.random();
 
-            const pitch = ( ( Math.round(Math.random()) === 0 ) ? -1 : 1 )* 180 * Math.random();
+                    const magx = 360 * Math.random();
+
+                    const roll = ( ( Math.round(Math.random()) === 0 ) ? -1 : 1 )* 180 * Math.random();
+
+                    const pitch = ( ( Math.round(Math.random()) === 0 ) ? -1 : 1 )* 180 * Math.random();
 
 
 //            pc.printf("%.8lf:%.8lf:%.1lf:%.1lf:%.1lf:%.1lf\n",  lat,lng,alt,magx,roll,pitch);
 
-            portEmulator.write(`${lat.toFixed(8)}:${lng.toFixed(8)}:${alt.toFixed(1)}:${magx.toFixed(1)}:${roll.toFixed(1)}:${pitch.toFixed(1)}\n`);
-            portEmulator.close();
-        });
-        console.log('Executed cron')
+                    portEmulator.write(`${lat.toFixed(8)}:${lng.toFixed(8)}:${alt.toFixed(1)}:${magx.toFixed(1)}:${roll.toFixed(1)}:${pitch.toFixed(1)}\n`);
+                    portEmulator.close();
+                });
+                console.log('Executed cron')
+            });
+        }
+
+
     });
-    }
+
+
+
+
+
+
 
 
 
