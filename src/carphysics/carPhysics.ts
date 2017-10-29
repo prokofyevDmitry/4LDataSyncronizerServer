@@ -1,7 +1,7 @@
 import * as SerialPort from 'serialport';
 import logger from '../logger';
 import RestApi from '../restapi/restApi';
-import MysqlWorker from "../mysql";
+import MysqlWorker from "../mysql/mysql";
 
 const EventEmitter = require('events');
 
@@ -21,7 +21,7 @@ export default class CarPhysics {
         console.log(comPort);
         // port configuration
         comPort = new SerialPort(comPort.name, comPort.configs);
-        this.dbCommunication = new MysqlWorker({AutoConnect: true});
+        this.dbCommunication = new MysqlWorker(true);
 
         // error handling db
         this.dbCommunication.eventEmitter.on('error-connect', (err) => {

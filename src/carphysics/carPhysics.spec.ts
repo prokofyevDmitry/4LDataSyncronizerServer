@@ -1,13 +1,11 @@
 import CarPhysics from './carPhysics';
-
-const config = require('../config');
+import Configs from '../configs_for_tests';
 import {expect} from 'chai';
 import 'mocha';
 
+const carPhysics = new CarPhysics(Configs.configs.dev.comPort);
 
-const carPhysics = new CarPhysics(config.comPort);
-
-describe('Test function car physics', () => {
+describe('Testing CarPhysics', () => {
 
     it('Should return test', () => {
         const result = carPhysics.test();

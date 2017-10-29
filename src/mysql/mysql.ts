@@ -1,21 +1,41 @@
 const mysql = require('mysql');
-import config from './config';
-import logger from './logger';
+import config from '../config';
+import logger from '../logger';
 
 const EventEmitter = require('events');
+
+/**
+ * Represents a mysql connector able to make requests to a mysql database
+ */
 export default class MysqlWorker {
     // object variables
     private con;
+    /**
+     * Propertie used to return events affter acomplishing an asyncronous function like DB writing or connecting.
+     * Returned events (name, data ):
+     *      ('error-connect',err) : cannot connect to database
+     *      ('ok-connect') : connected to database successfuly
+     *      ('error-mysql-query') : error on mysql query
+     *
+     * @type {"events".internal}
+     */
     eventEmitter = new EventEmitter();
 
+    /**
+     * @class
+     * @param {object} configs configs of the mysql worker
+     *        {boolean} configs.autoConnect Should mysql worker connect right after the object is created ?
+     *        {object } configs.mysqlConfigs configs of the mysql db to connect to.
+     *
+     */
     constructor(configs) {
-        if (configs.AutoConnect) {
-            this.connect();
+        if (configs.autoConnect) {
+            this.connect(configs.mysqlConfigs);
         }
     }
 
-    public connect() {
-        this.con = mysql.createConnection(config.mysql_config);
+    public connect(mysqlConfigs) {
+        this.con = mysql.createConnection(mysqlConfigs);
         this.con.connect((err) => {
             if (err) {
                 this.eventEmitter.emit('error-connect', err);

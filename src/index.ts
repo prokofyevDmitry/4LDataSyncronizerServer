@@ -63,7 +63,6 @@ app.listen(8080, () => {
 
     const carPhysics = new CarPhysics(config.comPort);
     // car physics event handling
-
     // error connecting serial
     carPhysics.eventEmitter.on('error-serial', (err) => {
         logger.log('error', 'Cannot connect to serial communication', {
@@ -71,13 +70,11 @@ app.listen(8080, () => {
         });
         logger.log('info', 'The CarPhysics will not be tracked');
         carPhysics.stop();
-
     });
 
     // error connection to db
     carPhysics.eventEmitter.on('error-mysql', () => {
         logger.log('info', 'The CarPhysics will not be tracked');
-
     });
 
     //
