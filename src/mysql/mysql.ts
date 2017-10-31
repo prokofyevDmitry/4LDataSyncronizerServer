@@ -16,6 +16,7 @@ export default class MysqlWorker {
      *      ('error-connect',err) : cannot connect to database
      *      ('ok-connect') : connected to database successfuly
      *      ('error-mysql-query') : error on mysql query
+     *      ('ok-mysql-query') : ok on mysql query
      *
      * @type {"events".internal}
      */
@@ -61,12 +62,15 @@ export default class MysqlWorker {
                 return;
             }
             logger.log('info', 'carphysics write to mysql OK');
+            this.eventEmitter.emit('ok-mysql-query');
             return results;
         })
     }
 
     public disconnect() {
-        this.con.disconnect();
+        this.con.end();
+        // killing all listener for object events
+        this.eventEmitter.removeAllListeners('error-connect').removeAllListeners('ok-connect').removeAllListeners('error-mysql-query').removeAllListeners('ok-mysql-query');
     }
 
 }

@@ -9,7 +9,7 @@ export default class Configs {
         dev: {
             env: env,
             comPort: {
-                name: "/dev/pts/13",
+                name: "/dev/pts/1",
                 configs: {
                     //baudRate: 90600,
                     autoOpen: false,
@@ -17,13 +17,13 @@ export default class Configs {
             },
 
             portComEmulator: {
-                name: "/dev/pts/16",
+                name: "/dev/pts/6",
                 configs: {
                     //baudRate: 90600,
                     autoOpen: false
                 }
             },
-            mysql_config: {
+            mysqlConfig: {
                 host: "localhost",
                 user: "root",
                 password: "root",

@@ -1,5 +1,4 @@
 import MysqlWorker from './mysql';
-
 import Configs from '../configs_for_tests';
 import {expect} from 'chai';
 import 'mocha';
@@ -7,9 +6,13 @@ import 'mocha';
 
 describe('Testing MysqlWorker', () => {
 
+    let mysqlWorker;
+    before(() => {
+        mysqlWorker = new MysqlWorker({autoConnect: false});
+    })
+
     it('Should emmit signal ok-connect', (done) => {
-        const mysqlWorker = new MysqlWorker({autoConnect: false});
-        mysqlWorker.connect(Configs.configs.dev.mysql_config);
+        mysqlWorker.connect(Configs.configs.dev.mysqlConfig);
         // if error =>
         mysqlWorker.eventEmitter.on('error-connect', (err) => {
             done(err);
@@ -19,6 +22,9 @@ describe('Testing MysqlWorker', () => {
             done();
         });
 
+        after(() => {
+            mysqlWorker.disconnect()
+        })
 
     });
 

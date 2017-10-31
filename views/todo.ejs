@@ -1,20 +1,22 @@
 <div>Bonjour</div>
 <div>
-    <% for(todo in todos) {%>
+    <% for(todo in todos) { %>
 
-    <p><button onclick="toogleTodo('<%= todos[todo]%>')"> Delet</button><%= todos[todo] %></p>
-    <%}%>
-<input id="input"> </input> <button onclick="toogleTodo()" id = "sendbutton">Add</button>
+    <p>
+        <button onclick="toogleTodo('<%= todos[todo] %>')"> Delet</button><%= todos[todo] %></p>
+    <% } %>
+    <input id="input"> </input>
+    <button onclick="toogleTodo()" id="sendbutton">Add</button>
 </div>
 
 
 <script>
 
-    var toogleTodo = function(todo){
-        if(typeof todo === 'undefined')
-        window.location.replace('http://localhost:8080/'+document.getElementById('input').value);
+    let toogleTodo = function (todo) {
+        if (typeof todo === 'undefined')
+            window.location.replace('http://localhost:8080/' + document.getElementById('input').value);
         else
-            window.location.replace('http://localhost:8080/'+todo);
+            window.location.replace('http://localhost:8080/' + todo);
     }
 </script>
 
