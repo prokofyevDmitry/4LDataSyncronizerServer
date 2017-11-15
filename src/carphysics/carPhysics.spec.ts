@@ -7,6 +7,7 @@ import 'mocha';
 describe('Testing CarPhysics', () => {
 
     let carPhysics = null;
+    let config = null;
     before(() => {
         // Create a new Rectangle object before every test.
 
@@ -14,6 +15,7 @@ describe('Testing CarPhysics', () => {
             autoConfigure: false
         });
 
+        config = new Configs();
 
     });
 
@@ -25,7 +27,7 @@ describe('Testing CarPhysics', () => {
 
     it('Should connect to mysql server', (done) => {
 
-        carPhysics.connectToDb(Configs.configs.dev.mysqlConfig);
+        carPhysics.connectToDb(config.config.mysqlConfig);
         carPhysics.dbCommunication.eventEmitter.on('error-connect', (err) => {
             done(err);
         });
@@ -36,7 +38,7 @@ describe('Testing CarPhysics', () => {
 
     it('Should connect to serial com', (done) => {
 
-        carPhysics.connectToSerial(Configs.configs.dev.comPort);
+        carPhysics.connectToSerial(config.config.comPort);
 
         carPhysics.eventEmitter.on('error-serial', (err) => {
             done(err);
@@ -52,7 +54,7 @@ describe('Testing CarPhysics', () => {
             done(err);
         });
         carPhysics.dbCommunication.eventEmitter.on('ok-mysql-query', (err) => {
-            done(err);
+            done();
         });
 
     })

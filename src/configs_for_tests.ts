@@ -1,13 +1,12 @@
 // in this file the configs are a class so they can be instantiated via import statement with mocha tests.
 // This is necessary because mocha seems unable to import an object like the configs in "config.ts"
 
-const env = process.env.NODE_ENV || 'dev';
 
 export default class Configs {
 
     static configs = {
         dev: {
-            env: env,
+            env: 'dev',
             comPort: {
                 name: "/dev/pts/1",
                 configs: {
@@ -28,12 +27,23 @@ export default class Configs {
                 user: "root",
                 password: "root",
                 database: '4LDB'
+            },
+            imageHandlerConfig: {
+                path: '/home/dmitry/imagestock',
+                testPath: '/home/dmitry/testimagestock',
             }
 
-        }
+        },
+        prod: {}
     }
 
+    config: any;
 
+    constructor() {
+        const env = process.env.NODE_ENV || 'dev';
+        this.config = (env === 'dev') ? Configs.configs.dev : Configs.configs.prod;
+
+    }
 }
 
 

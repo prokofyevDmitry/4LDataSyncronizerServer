@@ -11,6 +11,7 @@ export default class CarPhysics {
     comPort: SerialPort;
     // expressing the states for the carphysics grabber
     state: string;
+    // todo : review the state policy
     static states = ['running', 'writing-error-mysql'];
     dbCommunication: MysqlWorker;
     api: RestApi;
@@ -108,6 +109,7 @@ export default class CarPhysics {
         });
     }
 
+    // socket io configuration
 
     public writeDataToDb(datas) {
         const sql_request = "INSERT INTO pointgps (lattitude, longitude, altitude, magx, roll, pitch, etape_idetape) VALUES ( ?, ?, ?, ?, ?, ?, (SELECT idetape FROM etape WHERE time_depart IS NOT NULL AND time_arrivee IS NULL))";
@@ -122,6 +124,7 @@ export default class CarPhysics {
         // closing serial communication
         if (this.comPort.isOpen)
             this.comPort.close();
+
         // removing listeners
         this.eventEmitter.removeAllListeners('error-serial').removeAllListeners('ok-serial');
 

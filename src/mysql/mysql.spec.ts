@@ -6,18 +6,20 @@ import 'mocha';
 
 describe('Testing MysqlWorker', () => {
 
-    let mysqlWorker;
+    let mysqlWorker = null;
+    let config = null;
     before(() => {
         mysqlWorker = new MysqlWorker({autoConnect: false});
+        config = new Configs();
     })
 
     it('Should emmit signal ok-connect', (done) => {
-        mysqlWorker.connect(Configs.configs.dev.mysqlConfig);
+        mysqlWorker.connect(config.config.mysqlConfig);
         // if error =>
         mysqlWorker.eventEmitter.on('error-connect', (err) => {
             done(err);
         });
-        // if ok =>
+        // if ok
         mysqlWorker.eventEmitter.on('ok-connect', () => {
             done();
         });

@@ -4,7 +4,7 @@ const configs = {
     dev: {
         env: env,
         comPort: {
-            name: "/dev/pts/1",
+            name: "/dev/pts/9",
             configs: {
                 //baudRate: 90600,
                 autoOpen: false,
@@ -12,7 +12,7 @@ const configs = {
         },
 
         portComEmulator: {
-            name: "/dev/pts/6",
+            name: "/dev/pts/10",
             configs: {
                 //baudRate: 90600,
                 autoOpen: false

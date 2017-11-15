@@ -53,17 +53,17 @@ export default class MysqlWorker {
      *
      * @param {any} sql_req : the query string like : 'SELECT * FROM users WHERE id = ?'
      * @param {any} elements : the elements to populate the request : ex: [userId]
+     * @param {string} query_name: a string to name the event broadcasted when query is done
      */
-    public run_request(sql_req: string, elements: Array<any>) {
+    public run_request(sql_req: string, elements: Array<any> = [], query_name = "") {
         this.con.query(sql_req, elements, (error, results) => {
             if (error) {
-                this.eventEmitter.emit('error-mysql-query');
+                this.eventEmitter.emit('error-mysql-query' + query_name);
                 logger.log('error', 'mysql request error', {sql_req, elements, error});
                 return;
             }
             logger.log('info', 'carphysics write to mysql OK');
-            this.eventEmitter.emit('ok-mysql-query');
-            return results;
+            this.eventEmitter.emit('ok-mysql-query' + query_name, results);
         })
     }
 
