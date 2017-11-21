@@ -10,6 +10,7 @@ import session = require('express-session');
 import CarPhysics from './carphysics/carPhysics';
 import * as SerialPort from 'serialport';
 
+
 const app = express();
 
 const sess = {
@@ -87,7 +88,7 @@ app.listen(8080, () => {
             //     // launching cron job to give emulate data from axcelerometer
             const rule = new schedule.RecurrenceRule();
 
-            rule.second = new schedule.Range(0, 59, 5);
+            rule.second = new schedule.Range(0, 59, 1);
             schedule.scheduleJob(rule, () => {
                 const portEmulator = new SerialPort(config.portComEmulator.name, config.portComEmulator.configs);
                 portEmulator.open((err) => {

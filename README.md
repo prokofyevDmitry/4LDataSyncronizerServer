@@ -3,9 +3,9 @@ Node js server that receives images and data through Serial and Socket and sync 
 
 ##**Prerequisites**
 
--nodejs
+-[Node JS](https://nodejs.org/en/download/)
 
--typescript
+-[typescript](https://www.npmjs.com/package/typescript)
 
 
 
@@ -92,7 +92,13 @@ env: 'prod',
 
 The components are tested using Mocha.
 `npm test`
-    
+
+## **Communication**
+Number of sockets are used to communicate with a HMI
+
+* Port `8000` : socket for Carphysics emmiting `'info',data` socket message
+* Port `8001` : socket for logger emmiting `'logs',data` socket message
+
 
 
 

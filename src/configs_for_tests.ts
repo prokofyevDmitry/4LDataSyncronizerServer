@@ -8,7 +8,7 @@ export default class Configs {
         dev: {
             env: 'dev',
             comPort: {
-                name: "/dev/pts/1",
+                name: "/dev/pts/6",
                 configs: {
                     //baudRate: 90600,
                     autoOpen: false,
@@ -16,7 +16,7 @@ export default class Configs {
             },
 
             portComEmulator: {
-                name: "/dev/pts/6",
+                name: "/dev/pts/7",
                 configs: {
                     //baudRate: 90600,
                     autoOpen: false

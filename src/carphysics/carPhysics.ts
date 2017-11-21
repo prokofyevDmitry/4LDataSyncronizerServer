@@ -2,6 +2,10 @@ import * as SerialPort from 'serialport';
 import logger from '../logger';
 import RestApi from '../restapi/restApi';
 import MysqlWorker from "../mysql/mysql";
+import * as http from "http";
+
+const io = require('socket.io')(http);
+
 
 const EventEmitter = require('events');
 
@@ -46,6 +50,11 @@ export default class CarPhysics {
 
         // handling writing to DB error, we propagate it to index JS the client
 
+        // socket configuration
+        io.on('connection', function (socket) {
+            console.log('a user connected for car physics');
+        });
+        io.listen(8000);
 
         // now the carphysics grabber is running
         this.state = CarPhysics.states[0];
@@ -103,6 +112,16 @@ export default class CarPhysics {
                 //"%.8lf:%.8lf:%.1lf:%.1lf:%.1lf:%.1lf"
                 //lat,lng,alt,magx,roll,pitch
                 // writing the point to database with the current etape id
+                const datas_to_parse = data.split(':');
+                const json_data = {
+                    lat: datas_to_parse[0],
+                    lng: datas_to_parse[1],
+                    alt: datas_to_parse[2],
+                    magx: datas_to_parse[3],
+                    roll: datas_to_parse[4],
+                    pitch: datas_to_parse[5]
+                }
+                io.emit('info', json_data);
                 this.writeDataToDb(data);
 
             });
