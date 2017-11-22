@@ -8,7 +8,7 @@ export default class Configs {
         dev: {
             env: 'dev',
             comPort: {
-                name: "/dev/pts/6",
+                name: "COM5",
                 configs: {
                     //baudRate: 90600,
                     autoOpen: false,

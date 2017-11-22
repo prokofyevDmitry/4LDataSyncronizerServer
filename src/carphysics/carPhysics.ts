@@ -15,10 +15,13 @@ export default class CarPhysics {
     comPort: SerialPort;
     // expressing the states for the carphysics grabber
     state: string;
+    // reconnexion timer
     // todo : review the state policy
     static states = ['running', 'writing-error-mysql'];
     dbCommunication: MysqlWorker;
     api: RestApi;
+
+
     /**
      * Propertie used to return events affter acomplishing an asyncronous function like DB writing or connecting.
      * Returned events (name, data ):
@@ -45,6 +48,8 @@ export default class CarPhysics {
         if (configs.autoConfigure) {
             this.connectToDb(configs.mysqlConfigs);
             this.connectToSerial(configs.comPort);
+
+
         }
 
 
@@ -58,6 +63,49 @@ export default class CarPhysics {
 
         // now the carphysics grabber is running
         this.state = CarPhysics.states[0];
+
+
+
+        // event configurations for reconnection
+        //   //if the disconnect is accidental we try to reconnect every 1 secs
+        //
+        // const self = this;
+        // this.comPort.once('close',(err)=>{
+        //     console.log('perte de connexion');
+        //     // on test l'existance de
+        //     console.log(err);
+
+
+        //     const reconnexion =  (serialConfigs) => {
+
+        //         console.log('verificationde la reconnexion')
+        //         SerialPort.list().then((res)=>{
+        //             for (let com of res)
+        //                 {
+        //                     if (serialConfigs.name == com.comName)
+        //                     {
+
+        //                         self.connectToSerial(serialConfigs);
+        //                     }
+        //                 }
+        //         });
+        // }
+
+
+        // const reconnexionInterval = setInterval((serialConfigs) => {
+        //         reconnexion(serialConfigs)
+        //     },1000,configs.comPort)
+
+        // // once the connection is made then we reset the interval
+        // this.comPort.once('data',()=>{
+        //     console.log('fin reconnexion')
+        //     clearInterval(reconnexionInterval);
+        // })
+
+
+        // });
+
+
 
     }
 
@@ -88,6 +136,7 @@ export default class CarPhysics {
         const parser = new SerialPort.parsers.Readline();
         this.comPort = new SerialPort(serialConfigs.name, serialConfigs.configs);
         this.comPort.pipe(parser);
+
         this.comPort.open((err) => {
             // error handling if the port is not open
             // The error is propagated, so the main function do not use
@@ -103,30 +152,76 @@ export default class CarPhysics {
             logger.log('info', 'Com port opened for CarPhysics');
 
 
-            // configuration for what happens with new datas
-            parser.on('data', (data) => {
-                logger.log('info', 'Recieved com data', {
-                    data: data
-                });
-                // parsing data as follow :
-                //"%.8lf:%.8lf:%.1lf:%.1lf:%.1lf:%.1lf"
-                //lat,lng,alt,magx,roll,pitch
-                // writing the point to database with the current etape id
-                const datas_to_parse = data.split(':');
-                const json_data = {
-                    lat: datas_to_parse[0],
-                    lng: datas_to_parse[1],
-                    alt: datas_to_parse[2],
-                    magx: datas_to_parse[3],
-                    roll: datas_to_parse[4],
-                    pitch: datas_to_parse[5]
-                }
-                io.emit('info', json_data);
-                this.writeDataToDb(data);
 
-            });
         });
+
+        this.comPort.once('close',(err)=>{
+            console.log('perte de connexion');
+            // on test l'existance de
+            console.log(err);
+
+            if(err)
+            {
+
+
+        const self = this;
+        let timerId = setTimeout( function find_com() {
+            SerialPort.list().then((res)=>{
+                console.log('Grabed lists');
+                    for (let com of res)
+                        {
+                            if (serialConfigs.name == com.comName){
+                                console.log('reconnected')
+                                self.connectToSerial(serialConfigs);
+                                clearTimeout(timerId);
+                                return;
+                            }
+                        }
+                        timerId = setTimeout(find_com,1000);
+                });
+
+
+        } , 1000)
+
+
+
+
+
+
+
+        }});
+
+
+
+        // configuration for what happens with new datas
+        parser.on('data', (data) => {
+            logger.log('info', 'Recieved com data', {
+                data: data
+            });
+            // parsing data as follow :
+            //"%.8lf:%.8lf:%.1lf:%.1lf:%.1lf:%.1lf"
+            //lat,lng,alt,magx,roll,pitch
+            // writing the point to database with the current etape id
+            const datas_to_parse = data.split(':');
+            const json_data = {
+                lat: datas_to_parse[0],
+                lng: datas_to_parse[1],
+                alt: datas_to_parse[2],
+                magx: datas_to_parse[3],
+                roll: datas_to_parse[4],
+                pitch: datas_to_parse[5]
+            }
+            io.emit('info', json_data);
+            this.writeDataToDb(data);
+
+        });
+
+
+
+
     }
+
+
 
     // socket io configuration
 

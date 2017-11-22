@@ -10,7 +10,6 @@ const io = require('socket.io')(http);
 
 const send_log_though_socket = (log) => {
     io.emit('log', log);
-    console.log('emmited log via socket');
 };
 
 // logger configuration

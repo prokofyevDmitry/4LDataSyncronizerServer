@@ -2,9 +2,9 @@ const env = process.env.NODE_ENV || 'dev';
 
 const configs = {
     dev: {
-        env: env,
+        env: 'prod',
         comPort: {
-            name: "/dev/pts/6",
+            name: "COM5",
             configs: {
                 //baudRate: 90600,
                 autoOpen: false,
