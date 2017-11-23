@@ -114,12 +114,8 @@ export default class CarPhysics {
         this.dbCommunication = new MysqlWorker({autoConnect: true, mysqlConfigs: mysqlConfigs});
 
         this.dbCommunication.eventEmitter.on('ok-connect', () => {
-
             logger.log('info', 'Mysql worker connected for CarPhysics');
-            // we are connected to the database and we can open serial port
-
         });
-
         this.dbCommunication.eventEmitter.on('error-mysql-query', () => {
                 this.state = CarPhysics.states[2];
             }
@@ -162,8 +158,6 @@ export default class CarPhysics {
 
             if(err)
             {
-
-
         const self = this;
         let timerId = setTimeout( function find_com() {
             SerialPort.list().then((res)=>{
@@ -179,8 +173,6 @@ export default class CarPhysics {
                         }
                         timerId = setTimeout(find_com,1000);
                 });
-
-
         } , 1000)
 
 
