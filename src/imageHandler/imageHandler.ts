@@ -67,8 +67,8 @@ export default class ImageHandler {
             // we are connected to the database and we can open serial port
         });
 
-        this.dbCommunication.eventEmitter.on('error-mysql-query', () => {
-                logger.log('error', 'Mysql worker didn\'t connect  for ImageHandler');
+        this.dbCommunication.eventEmitter.on('error-mysql-querywrite_image_props', () => {
+                logger.log('error', 'Error on image props writting in db');
             }
         );
 

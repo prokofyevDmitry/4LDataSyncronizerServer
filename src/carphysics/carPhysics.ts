@@ -71,47 +71,6 @@ export default class CarPhysics {
         // now the carphysics grabber is running
         this.state = CarPhysics.states[0];
 
-
-        // event configurations for reconnection
-        //   //if the disconnect is accidental we try to reconnect every 1 secs
-        //
-        // const self = this;
-        // this.comPort.once('close',(err)=>{
-        //     console.log('perte de connexion');
-        //     // on test l'existance de
-        //     console.log(err);
-
-
-        //     const reconnexion =  (serialConfigs) => {
-
-        //         console.log('verificationde la reconnexion')
-        //         SerialPort.list().then((res)=>{
-        //             for (let com of res)
-        //                 {
-        //                     if (serialConfigs.name == com.comName)
-        //                     {
-
-        //                         self.connectToSerial(serialConfigs);
-        //                     }
-        //                 }
-        //         });
-        // }
-
-
-        // const reconnexionInterval = setInterval((serialConfigs) => {
-        //         reconnexion(serialConfigs)
-        //     },1000,configs.comPort)
-
-        // // once the connection is made then we reset the interval
-        // this.comPort.once('data',()=>{
-        //     console.log('fin reconnexion')
-        //     clearInterval(reconnexionInterval);
-        // })
-
-
-        // });
-
-
     }
 
 
@@ -121,7 +80,7 @@ export default class CarPhysics {
         this.dbCommunication.eventEmitter.on('ok-connect', () => {
             logger.log('info', 'Mysql worker connected for CarPhysics');
         });
-        this.dbCommunication.eventEmitter.on('error-mysql-query', () => {
+        this.dbCommunication.eventEmitter.on('error-mysql-querywrite_pointgps', () => {
                 this.state = CarPhysics.states[2];
             }
         );
@@ -213,7 +172,7 @@ export default class CarPhysics {
 
     public writeDataToDb(datas) {
         const sql_request = "INSERT INTO pointgps (lattitude, longitude, altitude, magx, roll, pitch, etape_idetape) VALUES ( ?, ?, ?, ?, ?, ?, (SELECT idetape FROM etape WHERE time_depart IS NOT NULL AND time_arrivee IS NULL))";
-        this.dbCommunication.run_request(sql_request, datas.split(':'));
+        this.dbCommunication.run_request(sql_request, datas.split(':'),'write_pointgps');
     }
 
 
@@ -242,5 +201,3 @@ export default class CarPhysics {
 
 
 }
-
-
