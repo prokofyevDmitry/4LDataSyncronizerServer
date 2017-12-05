@@ -172,7 +172,7 @@ export default class CarPhysics {
 
     public writeDataToDb(datas) {
         const sql_request = "INSERT INTO pointgps (lattitude, longitude, altitude, magx, roll, pitch, etape_idetape) VALUES ( ?, ?, ?, ?, ?, ?, (SELECT idetape FROM etape WHERE time_depart IS NOT NULL AND time_arrivee IS NULL))";
-        this.dbCommunication.run_request(sql_request, datas.split(':'),'write_pointgps');
+        this.dbCommunication.run_request(sql_request, 'write_pointgps', datas.split(':'));
     }
 
 

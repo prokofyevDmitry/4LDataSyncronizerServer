@@ -10,59 +10,36 @@ import session = require('express-session');
 import CarPhysics from './carphysics/carPhysics';
 import * as SerialPort from 'serialport';
 
+// import api routes
+import stageAPI from './restapi/stageAPI';
 
 const app = express();
+const bodyParser = require('body-parser');
 
-const sess = {
-    secret: 'keyboard cat',
-    cookie: {
-        maxAge: 600000
-    }
-};
-app.use(session(sess));
+// json request parser
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
+app.use(bodyParser.json());
 
-
-app.get('/', (req, res) => {
-    console.log('In home');
-    res.render('todo.ejs', {todos: req.session.todos});
-    const port = app.get('portCom');
-    port.write("Hello stanger");
+// api configuration
+app.use('/stage', stageAPI);
 
 
-});
 
+app.post('/',(req,res)=>{
+  console.log(req.body);
+  return res.status(200);
+})
 
-// app.get('/:todo', (req, res) => {
-//     // adding a todo to the session
-//     const todo = req.params.todo;
-//     if (req.session.todos) {
-//         console.log(req.session.todos);
-//         console.log(typeof req.session.todos)
-//         // si le todo existe alors on le suprime
-//         const index = req.session.todos.indexOf(todo);
-//         if (index > -1)
-//             req.session.todos.splice(index, 1);
-//         else
-//             req.session.todos.push(todo);
-//     }
-//     else {
-//         console.log('Adding a new todo');
-//         console.log(todo);
-//         req.session.todos = [todo];
-//         console.log(req.session.todos);
-//     }
-//     res.redirect('/');
-// });
-
-
-// app.get('/chambre/:number', (req, res) => {
-//     res.render('todo.ejs', {number: req.params.number})
-//
-// });
 
 app.listen(8080, () => {
 
-    const carPhysics = new CarPhysics({autoConfigure: true, comPort: config.comPort, mysqlConfigs: config.mysqlConfig});
+    const carPhysics = new CarPhysics({
+        autoConfigure: true,
+        comPort: config.comPort,
+        mysqlConfigs: config.mysqlConfig
+    });
     // car physics event handling
     // error connecting serial
     carPhysics.eventEmitter.on('error-serial', (err) => {
@@ -119,29 +96,3 @@ app.listen(8080, () => {
     });
 
 });
-
-
-// TODO: request to create,open and close etape
-
-
-// const server = http.createServer((req, res) =>  {
-
-//   res.writeHead(200);
-//   Hello();
-//   res.end('Salut tout le monde :) !');
-
-//   emitter.emit('request',[req.headers])
-//   ByeBye();
-
-// });
-
-// server.on('close',()=> console.log('Closign server'));
-
-
-// server.listen(8080);
-
-
-
-
-
-

@@ -56,9 +56,13 @@ typings/
 
 # dotenv environment variables file
 .env
-
+/src/*.js
 /.idea/
 /dist/
 /.vscode/
 /.nyc_output/
 /coverage/
+package-lock.json
+
+/DBs/4LDB.mwb.bak
+/DBs/4LDBCreator.sql

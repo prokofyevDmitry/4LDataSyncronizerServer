@@ -55,7 +55,7 @@ export default class MysqlWorker {
      * @param {any} elements : the elements to populate the request : ex: [userId]
      * @param {string} query_name: a string to name the event broadcasted when query is done
      */
-    public run_request(sql_req: string, elements: Array<any> = [], query_name: string) {
+    public run_request(sql_req: string, query_name: string, elements: Array<any> = []) {
         console.log("query_name : "+ query_name);
         this.con.query(sql_req, elements, (error, results) => {
             if (error) {
