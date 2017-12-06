@@ -67,4 +67,34 @@ stageAPI.post('/',
     }
 );
 
+
+/**
+
+Query that return all stages ordered by creation time.
+
+
+*/
+stageAPI.get('/',(req,res)=>{
+  const mysqlWorker = new MysqlWorker({autoConnect: true, mysqlConfigs: config.mysqlConfig});
+
+  const queryName = "get_insert";
+
+  mysqlWorker.eventEmitter.once('error-connect', () => {
+      res.status(500).send("Erreur de connexion à la base de données");
+  });
+  mysqlWorker.eventEmitter.once('error-mysql-query' + queryName, () => {
+    res.status(500).send("Erreur de requette à la base de données");
+  });
+  mysqlWorker.eventEmitter.once('ok-mysql-query' + queryName, (result) => {
+      res.status(200).send(result);
+  });
+
+
+  const sql_request = "SELECT *  FROM etape ;";
+  mysqlWorker.run_request(sql_request, queryName);
+})
+
+
+
+
 export default stageAPI;
