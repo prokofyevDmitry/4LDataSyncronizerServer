@@ -59,6 +59,7 @@ export default class CarPhysics {
 
         });
         let lat = 0, lng = 0, time = 0;
+        // TODO : remove this
         // setInterval(() => {
         //     io.emit('gpsPoint', {lat: lat++, lng: lng++, time: time++});
         //     if (lat > 30)

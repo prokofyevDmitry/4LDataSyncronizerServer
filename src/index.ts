@@ -12,18 +12,20 @@ import * as SerialPort from 'serialport';
 
 // import api routes
 import stageAPI from './restapi/stageAPI';
+import gpsPointsAPI from './restapi/gpsPointsAPI'
+
+
 
 const app = express();
 const bodyParser = require('body-parser');
+var cors = require('cors')
 
-// json request parser
-app.use(bodyParser.urlencoded({
-    extended: true
-}));
+
 app.use(bodyParser.json());
-
+app.use(cors())
 // api configuration
 app.use('/stage', stageAPI);
+app.use('/gpsPoints', gpsPointsAPI);
 
 
 
