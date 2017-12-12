@@ -62,3 +62,4 @@ typings/
 /.vscode/
 /.nyc_output/
 /coverage/
+package-lock.json
