@@ -69,6 +69,7 @@ app.listen(8080, () => {
         logger.log('error', 'Cannot connect to serial communication', {
             error: err
         });
+        
         logger.log('info', 'The CarPhysics will not be tracked');
         carPhysics.stop();
     });

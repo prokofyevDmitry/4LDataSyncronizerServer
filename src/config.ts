@@ -4,9 +4,9 @@ const configs = {
     dev: {
         env: 'prod',
         comPort: {
-            name: "COM5",
+            name: "COM11",
             configs: {
-                //baudRate: 90600,
+                baudRate: 115200,
                 autoOpen: false,
             }
         },
