@@ -1,6 +1,5 @@
 import * as SerialPort from 'serialport';
 import logger from '../logger';
-import RestApi from '../restapi/restApi';
 import MysqlWorker from "../mysql/mysql";
 import * as http from "http";
 
@@ -19,7 +18,6 @@ export default class CarPhysics {
     // todo : review the state policy
     static states = ['running', 'writing-error-mysql'];
     dbCommunication: MysqlWorker;
-    api: RestApi;
 
 
     /**
@@ -48,8 +46,6 @@ export default class CarPhysics {
         if (configs.autoConfigure) {
             this.connectToDb(configs.mysqlConfigs);
             this.connectToSerial(configs.comPort);
-
-
         }
 
 
@@ -58,54 +54,23 @@ export default class CarPhysics {
         // socket configuration
         io.on('connection', function (socket) {
             console.log('a user connected for car physics');
+
+            // socket configuration for api
+
         });
+        let lat = 0, lng = 0, time = 0;
+        // TODO : remove this
+        // setInterval(() => {
+        //     io.emit('gpsPoint', {lat: lat++, lng: lng++, time: time++});
+        //     if (lat > 30)
+        //         lat = 0, lng = 0, time = 0;
+        //
+        // }, 3000)
         io.listen(8000);
+
 
         // now the carphysics grabber is running
         this.state = CarPhysics.states[0];
-
-
-
-        // event configurations for reconnection
-        //   //if the disconnect is accidental we try to reconnect every 1 secs
-        //
-        // const self = this;
-        // this.comPort.once('close',(err)=>{
-        //     console.log('perte de connexion');
-        //     // on test l'existance de
-        //     console.log(err);
-
-
-        //     const reconnexion =  (serialConfigs) => {
-
-        //         console.log('verificationde la reconnexion')
-        //         SerialPort.list().then((res)=>{
-        //             for (let com of res)
-        //                 {
-        //                     if (serialConfigs.name == com.comName)
-        //                     {
-
-        //                         self.connectToSerial(serialConfigs);
-        //                     }
-        //                 }
-        //         });
-        // }
-
-
-        // const reconnexionInterval = setInterval((serialConfigs) => {
-        //         reconnexion(serialConfigs)
-        //     },1000,configs.comPort)
-
-        // // once the connection is made then we reset the interval
-        // this.comPort.once('data',()=>{
-        //     console.log('fin reconnexion')
-        //     clearInterval(reconnexionInterval);
-        // })
-
-
-        // });
-
-
 
     }
 
@@ -114,13 +79,9 @@ export default class CarPhysics {
         this.dbCommunication = new MysqlWorker({autoConnect: true, mysqlConfigs: mysqlConfigs});
 
         this.dbCommunication.eventEmitter.on('ok-connect', () => {
-
             logger.log('info', 'Mysql worker connected for CarPhysics');
-            // we are connected to the database and we can open serial port
-
         });
-
-        this.dbCommunication.eventEmitter.on('error-mysql-query', () => {
+        this.dbCommunication.eventEmitter.on('error-mysql-querywrite_pointgps', () => {
                 this.state = CarPhysics.states[2];
             }
         );
@@ -152,45 +113,33 @@ export default class CarPhysics {
             logger.log('info', 'Com port opened for CarPhysics');
 
 
-
         });
 
-        this.comPort.once('close',(err)=>{
+        this.comPort.once('close', (err) => {
             console.log('perte de connexion');
             // on test l'existance de
             console.log(err);
 
-            if(err)
-            {
-
-
-        const self = this;
-        let timerId = setTimeout( function find_com() {
-            SerialPort.list().then((res)=>{
-                console.log('Grabed lists');
-                    for (let com of res)
-                        {
-                            if (serialConfigs.name == com.comName){
+            if (err) {
+                const self = this;
+                let timerId = setTimeout(function find_com() {
+                    SerialPort.list().then((res) => {
+                        console.log('Grabed lists');
+                        for (let com of res) {
+                            if (serialConfigs.name == com.comName) {
                                 console.log('reconnected')
                                 self.connectToSerial(serialConfigs);
                                 clearTimeout(timerId);
                                 return;
                             }
                         }
-                        timerId = setTimeout(find_com,1000);
-                });
+                        timerId = setTimeout(find_com, 1000);
+                    });
+                }, 1000)
 
 
-        } , 1000)
-
-
-
-
-
-
-
-        }});
-
+            }
+        });
 
 
         // configuration for what happens with new datas
@@ -222,17 +171,14 @@ export default class CarPhysics {
         });
 
 
-
-
     }
-
 
 
     // socket io configuration
 
     public writeDataToDb(datas) {
         const sql_request = "INSERT INTO pointgps (lattitude, longitude, altitude, magx, roll, pitch, etape_idetape) VALUES ( ?, ?, ?, ?, ?, ?, (SELECT idetape FROM etape WHERE time_depart IS NOT NULL AND time_arrivee IS NULL))";
-        this.dbCommunication.run_request(sql_request, datas.split(':'));
+        this.dbCommunication.run_request(sql_request, 'write_pointgps', datas.split(':'));
     }
 
 
@@ -261,5 +207,3 @@ export default class CarPhysics {
 
 
 }
-
-
