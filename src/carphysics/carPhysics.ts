@@ -153,13 +153,18 @@ export default class CarPhysics {
             // writing the point to database with the current etape id
             const datas_to_parse = data.split(':');
             const json_data = {
-                lat: datas_to_parse[0],
-                lng: datas_to_parse[1],
-                alt: datas_to_parse[2],
-                magx: datas_to_parse[3],
-                roll: datas_to_parse[4],
-                pitch: datas_to_parse[5]
+                pitch: parseFloat(datas_to_parse[0]),
+                roll: parseFloat(datas_to_parse[1]),
+                yaw: parseFloat(datas_to_parse[2])
+                
+                // lat: datas_to_parse[0],
+                // lng: datas_to_parse[1],
+                // alt: datas_to_parse[2],
+                // magx: datas_to_parse[3],
+                
             }
+
+
             io.emit('info', json_data);
             this.writeDataToDb(data);
 
