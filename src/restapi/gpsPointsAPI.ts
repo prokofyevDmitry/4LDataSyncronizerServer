@@ -16,6 +16,10 @@ const gpsPointsAPI = express.Router();
 
 
 
+
+
+
+
 /**
 Query that return 100 gps points for the given rectangle 
 
