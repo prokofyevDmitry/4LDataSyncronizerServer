@@ -19,7 +19,6 @@ export default class CarPhysics {
     static states = ['running', 'writing-error-mysql'];
     dbCommunication: MysqlWorker;
 
-
     /**
      * Propertie used to return events affter acomplishing an asyncronous function like DB writing or connecting.
      * Returned events (name, data ):
@@ -147,26 +146,43 @@ export default class CarPhysics {
             logger.log('info', 'Recieved com data', {
                 data: data
             });
+
+            // we suppose that data is sended at 100 eps
+
             // parsing data as follow :
             //"%.8lf:%.8lf:%.1lf:%.1lf:%.1lf:%.1lf"
             //lat,lng,alt,magx,roll,pitch
             // writing the point to database with the current etape id
             const datas_to_parse = data.split(':');
-            const json_data = {
+
+            let json_data = {}
+            if (datas_to_parse.length>4){
+            json_data = {
                 pitch: parseFloat(datas_to_parse[0]),
                 roll: parseFloat(datas_to_parse[1]),
-                yaw: parseFloat(datas_to_parse[2])
-                
-                // lat: datas_to_parse[0],
-                // lng: datas_to_parse[1],
-                // alt: datas_to_parse[2],
-                // magx: datas_to_parse[3],
-                
+                yaw: parseFloat(datas_to_parse[2]),
+                roll_dir: parseFloat(datas_to_parse[3]),
+                filtre: parseFloat(datas_to_parse[4])
             }
-
-
-            io.emit('info', json_data);
-            this.writeDataToDb(data);
+           logger.log('info', 'Emitting phys event ', {
+                data: json_data
+            });
+            io.emit('phys', json_data);
+            this.writePhysDataToDb(data);
+            }
+            else{
+                json_data = {
+                lng: parseFloat(datas_to_parse[0]),
+                lat: parseFloat(datas_to_parse[1]),
+                alt: parseFloat(datas_to_parse[2]),
+                speed: parseFloat(datas_to_parse[3])
+                    }
+            logger.log('info', 'Emitting geo event ', {
+                data: json_data
+            });
+            io.emit('geo', json_data);
+            this.writeGeoDataToDb(data);
+            }
 
         });
 
@@ -176,8 +192,13 @@ export default class CarPhysics {
 
     // socket io configuration
 
-    public writeDataToDb(datas) {
-        const sql_request = "INSERT INTO pointgps (lattitude, longitude, altitude, magx, roll, pitch, etape_idetape) VALUES ( ?, ?, ?, ?, ?, ?, (SELECT idetape FROM etape WHERE time_depart IS NOT NULL AND time_arrivee IS NULL))";
+    public writeGeoDataToDb(datas) {
+        const sql_request = "INSERT INTO pointgps (longitude,lattitude, altitude, vitesse, etapeid) VALUES ( ?, ?, ?, ?, (SELECT id FROM etape WHERE time_depart IS NOT NULL AND time_arrivee IS NULL))";
+        this.dbCommunication.run_request(sql_request, 'write_pointgps', datas.split(':'));
+    }
+
+    public writePhysDataToDb(datas) {
+        const sql_request = "INSERT INTO physics (pitch, roll, yaw, roll_dir, filtre, etapeid) VALUES ( ?, ?, ?, ?, ?, (SELECT id FROM etape WHERE time_depart IS NOT NULL AND time_arrivee IS NULL))";
         this.dbCommunication.run_request(sql_request, 'write_pointgps', datas.split(':'));
     }
 

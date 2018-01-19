@@ -20,6 +20,40 @@ const stageAPI = express.Router();
  * Stage api:
  */
 
+/**
+ * Close a stage
+ * params:
+ * {
+ *      null
+ * }
+ */
+stageAPI.get('/close',(req,res)=>{
+    //////////////////////// MYSQL ////////////////////////////
+        const mysqlWorker = new MysqlWorker({autoConnect: true, mysqlConfigs: config.mysqlConfig});
+
+        const queryName = "stage_close";
+        // response configuration
+        mysqlWorker.eventEmitter.once('error-connect', () => {
+            mysqlWorker.disconnect();
+            res.status(500).send("Erreur de connexion à la base de données");
+        });
+        mysqlWorker.eventEmitter.once('error-mysql-query' + queryName, () => {
+            console.log('retrieved mysql error');
+            mysqlWorker.disconnect();
+            res.status(500).send("Erreur de requette à la base de données");
+        });
+        mysqlWorker.eventEmitter.once('ok-mysql-query' + queryName, () => {
+            console.log('retrieved mysql ok query');
+            mysqlWorker.disconnect();
+            res.status(200).send();
+        });
+
+
+        const sql_request = "UPDATE etape SET etape.time_arrivee=NOW() WHERE etape.time_arrivee IS NULL";
+
+
+        mysqlWorker.run_request(sql_request, queryName,[]);
+})
 
 /**
  * Create a stage
@@ -75,9 +109,9 @@ stageAPI.post('/',
 );
 
 
-// return infos about the stage : 
+// return infos about the stage :
 // the average speed
-// the elevation 
+// the elevation
 // the total distance
 // given the hight number of datas the request might be slow to process
 stageAPI.get('/:stage_id/infos', [
